@@ -99,7 +99,6 @@ def train_model(dataloaders, device, model, criterion, optimizer, scheduler, num
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 100000000000
 
-    intersection = False
     printornot = True
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -213,24 +212,6 @@ def train_model(dataloaders, device, model, criterion, optimizer, scheduler, num
             elif phase == 'dev':
                 devlosslist.append(epoch_loss)
                 print(devlosslist)
-
-            if not intersection:
-                if len(devlosslist) > 1:
-                    if devlosslist[-2] > trainlosslist[-2] and devlosslist[-1] < trainlosslist[-1]:
-                        intersection_path = checkpoint_path_best.replace(".pt", "-intersection.pt")
-                        braintranslator_path = intersection_path.replace(".pt", "-braintranslator.pt")
-                        torch.save(model.state_dict(), intersection_path)
-                        torch.save(model.brain_translator.state_dict(), braintranslator_path)
-                        print(f'update intersection checkpoint: {intersection_path}')
-                        print("now epoch")
-                        print(len(devlosslist))
-                        print("dev loss")
-                        print(devlosslist[-2])
-                        print(devlosslist[-1])
-                        print("train loss")
-                        print(trainlosslist[-2])
-                        print(trainlosslist[-1])
-                        intersection = True
 
             # deep copy the model
             if phase == 'dev' and epoch_loss < best_loss:
